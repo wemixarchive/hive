@@ -1,3 +1,25 @@
+# wemix-hive
+```
+// build hive for wemix-qbft
+git clone https://github.com/wemixarchive/hive.git
+cd hive
+git checkout feat/wemix-qbft-porting
+GOPRIVATE="github.com" go mod tidy
+go build ./cmd/hivechain
+
+// execution
+// go wemix ethtest directory
+cd .../go-wemix-qbft/cmd/devp2p/internal/ethtest
+$HIVE_REPO/hivechain generate  \
+  --fork-interval 6 \
+  --tx-interval 1 \
+  --length 500 \
+  --outdir testdata \
+  --lastfork london \
+  --outputs accounts,genesis,chain,headstate,txinfo,headblock,headfcu,newpayload,forkenv
+
+```
+
 # hive - Ethereum end-to-end test harness
 
 Hive is a system for running integration tests against Ethereum clients.
