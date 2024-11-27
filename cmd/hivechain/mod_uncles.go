@@ -8,6 +8,7 @@ import (
 	"github.com/ethereum/go-ethereum/trie"
 )
 
+/* QBFT does not allow uncle block
 func init() {
 	register("uncles", func() blockModifier {
 		return &modUncles{
@@ -15,6 +16,7 @@ func init() {
 		}
 	})
 }
+*/
 
 type modUncles struct {
 	info    map[uint64]unclesInfo

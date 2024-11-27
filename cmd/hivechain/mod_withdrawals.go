@@ -4,6 +4,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
+/* QBFT does not allow withdrawal tx
 func init() {
 	register("withdrawals", func() blockModifier {
 		return &modWithdrawals{
@@ -11,6 +12,7 @@ func init() {
 		}
 	})
 }
+*/
 
 type modWithdrawals struct {
 	info map[uint64]withdrawalsInfo

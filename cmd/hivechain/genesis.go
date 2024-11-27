@@ -3,6 +3,9 @@ package main
 import (
 	"crypto/ecdsa"
 	"fmt"
+	"github.com/ethereum/go-ethereum/common/math"
+	qbftengine "github.com/ethereum/go-ethereum/consensus/qbft/engine"
+	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
 	"strings"
 
@@ -55,7 +58,7 @@ var (
 )
 
 // createChainConfig creates a chain configuration.
-func (cfg *generatorConfig) createChainConfig() *params.ChainConfig {
+func (cfg *generatorConfig) createChainConfig(val common.Address) *params.ChainConfig {
 	chaincfg := new(params.ChainConfig)
 
 	chainid, _ := new(big.Int).SetString("3503995874084926", 10)
@@ -71,58 +74,112 @@ func (cfg *generatorConfig) createChainConfig() *params.ChainConfig {
 		chaincfg.Ethash = new(params.EthashConfig)
 	}
 
-	// Apply forks.
-	forks := cfg.forkBlocks()
-	for fork, b := range forks {
-		timestamp := cfg.blockTimestamp(b)
+	chaincfg.HomesteadBlock = new(big.Int)
+	//chaincfg.DAOForkBlock = new(big.Int)  QBFT engine cannot handle DAOFork block because of Extra field
+	//chaincfg.DAOForkSupport = true
+	chaincfg.EIP150Block = new(big.Int)
+	chaincfg.EIP155Block = new(big.Int)
+	chaincfg.EIP158Block = new(big.Int)
+	chaincfg.ByzantiumBlock = new(big.Int)
+	chaincfg.ConstantinopleBlock = new(big.Int)
+	chaincfg.PetersburgBlock = new(big.Int)
+	chaincfg.IstanbulBlock = new(big.Int)
+	chaincfg.MuirGlacierBlock = new(big.Int)
+	chaincfg.BerlinBlock = new(big.Int)
+	chaincfg.LondonBlock = new(big.Int)
+	chaincfg.ArrowGlacierBlock = new(big.Int)
+	chaincfg.GrayGlacierBlock = new(big.Int)
+	chaincfg.PangyoBlock = new(big.Int)
+	chaincfg.ApplepieBlock = new(big.Int)
+	chaincfg.BriocheBlock = new(big.Int)
+	chaincfg.MontBlancBlock = new(big.Int)
+	chaincfg.Brioche = &params.BriocheConfig{
+		BlockReward:       big.NewInt(1e18),
+		FirstHalvingBlock: big.NewInt(50),
+		HalvingPeriod:     big.NewInt(50),
+		FinishRewardBlock: big.NewInt(450),
+		HalvingTimes:      8,
+		HalvingRate:       50,
+	}
 
-		switch fork {
-		// number-based forks
-		case "homestead":
-			chaincfg.HomesteadBlock = new(big.Int).SetUint64(b)
-		case "tangerinewhistle":
-			chaincfg.EIP150Block = new(big.Int).SetUint64(b)
-		case "spuriousdragon":
-			chaincfg.EIP155Block = new(big.Int).SetUint64(b)
-			chaincfg.EIP158Block = new(big.Int).SetUint64(b)
-		case "byzantium":
-			chaincfg.ByzantiumBlock = new(big.Int).SetUint64(b)
-		case "constantinople":
-			chaincfg.ConstantinopleBlock = new(big.Int).SetUint64(b)
-		case "petersburg":
-			chaincfg.PetersburgBlock = new(big.Int).SetUint64(b)
-		case "istanbul":
-			chaincfg.IstanbulBlock = new(big.Int).SetUint64(b)
-		case "muirglacier":
-			chaincfg.MuirGlacierBlock = new(big.Int).SetUint64(b)
-		case "berlin":
-			chaincfg.BerlinBlock = new(big.Int).SetUint64(b)
-		case "london":
-			chaincfg.LondonBlock = new(big.Int).SetUint64(b)
-		case "arrowglacier":
-			chaincfg.ArrowGlacierBlock = new(big.Int).SetUint64(b)
-		case "grayglacier":
-			chaincfg.GrayGlacierBlock = new(big.Int).SetUint64(b)
-		case "merge":
-			chaincfg.MergeNetsplitBlock = new(big.Int).SetUint64(b)
-			chaincfg.TerminalTotalDifficultyPassed = true
-		// time-based forks
-		case "shanghai":
-			chaincfg.ShanghaiTime = &timestamp
-		case "cancun":
-			chaincfg.CancunTime = &timestamp
-		case "prague":
-			chaincfg.PragueTime = &timestamp
-		default:
-			panic(fmt.Sprintf("unknown fork name %q", fork))
+	ebps := uint64(6)
+	br, _ := new(big.Int).SetString("1000000000000000000", 10)
+	bm := "validator"
+	vsm := "blockheader"
+	mb := common.HexToAddress("0x0000000000000000000000000000000000000000")
+	vals := make([]common.Address, 1)
+	vals[0] = val
+	mrts := uint64(4)
+	chaincfg.QBFT = &params.QBFTConfig{
+		EpochLength:              10,
+		BlockPeriodSeconds:       3,
+		EmptyBlockPeriodSeconds:  &ebps,
+		RequestTimeoutSeconds:    1000,
+		ProposerPolicy:           0,
+		BlockReward:              (*math.HexOrDecimal256)(br),
+		BeneficiaryMode:          &bm,
+		MiningBeneficiary:        &mb,
+		ValidatorSelectionMode:   &vsm,
+		Validators:               vals,
+		MaxRequestTimeoutSeconds: &mrts,
+	}
+
+	/*
+		// Apply forks.
+		forks := cfg.forkBlocks()
+		for fork, b := range forks {
+			timestamp := cfg.blockTimestamp(b)
+
+			switch fork {
+			// number-based forks
+			case "homestead":
+				chaincfg.HomesteadBlock = new(big.Int).SetUint64(b)
+			case "tangerinewhistle":
+				chaincfg.EIP150Block = new(big.Int).SetUint64(b)
+			case "spuriousdragon":
+				chaincfg.EIP155Block = new(big.Int).SetUint64(b)
+				chaincfg.EIP158Block = new(big.Int).SetUint64(b)
+			case "byzantium":
+				chaincfg.ByzantiumBlock = new(big.Int).SetUint64(b)
+			case "constantinople":
+				chaincfg.ConstantinopleBlock = new(big.Int).SetUint64(b)
+			case "petersburg":
+				chaincfg.PetersburgBlock = new(big.Int).SetUint64(b)
+			case "istanbul":
+				chaincfg.IstanbulBlock = new(big.Int).SetUint64(b)
+			case "muirglacier":
+				chaincfg.MuirGlacierBlock = new(big.Int).SetUint64(b)
+			case "berlin":
+				chaincfg.BerlinBlock = new(big.Int).SetUint64(b)
+			case "london":
+				chaincfg.LondonBlock = new(big.Int).SetUint64(b)
+			case "arrowglacier":
+				chaincfg.ArrowGlacierBlock = new(big.Int).SetUint64(b)
+			case "grayglacier":
+				chaincfg.GrayGlacierBlock = new(big.Int).SetUint64(b)
+			case "merge":
+				chaincfg.MergeNetsplitBlock = new(big.Int).SetUint64(b)
+				chaincfg.TerminalTotalDifficultyPassed = true
+			// time-based forks
+			case "shanghai":
+				chaincfg.ShanghaiTime = &timestamp
+			case "cancun":
+				chaincfg.CancunTime = &timestamp
+			case "prague":
+				chaincfg.PragueTime = &timestamp
+			default:
+				panic(fmt.Sprintf("unknown fork name %q", fork))
+			}
 		}
-	}
-
-	// Special case for merged-from-genesis networks.
-	// Need to assign TTD here because the genesis block won't be processed by GenerateChain.
-	if chaincfg.MergeNetsplitBlock != nil && chaincfg.MergeNetsplitBlock.Sign() == 0 {
-		chaincfg.TerminalTotalDifficulty = cfg.genesisDifficulty()
-	}
+		// Special case for merged-from-genesis networks.
+		// Need to assign TTD here because the genesis block won't be processed by GenerateChain.
+		if chaincfg.MergeNetsplitBlock != nil && chaincfg.MergeNetsplitBlock.Sign() == 0 {
+			chaincfg.TerminalTotalDifficulty = cfg.genesisDifficulty()
+		}
+		//ttd := new(big.Int).Set(params.GenesisDifficulty)
+		// We intend last block to be `ForkchoiceUpdated`
+		//chaincfg.TerminalTotalDifficulty = ttd.Add(ttd, big.NewInt(500))
+	*/
 
 	return chaincfg
 }
@@ -131,20 +188,30 @@ func (cfg *generatorConfig) genesisDifficulty() *big.Int {
 	if cfg.clique {
 		return big.NewInt(1)
 	}
-	return new(big.Int).Set(params.MinimumDifficulty)
+	//return new(big.Int).Set(params.MinimumDifficulty)
+	return big.NewInt(1)
 }
 
 // createGenesis creates the genesis block and config.
-func (cfg *generatorConfig) createGenesis() *core.Genesis {
+func (cfg *generatorConfig) createGenesis(val common.Address) *core.Genesis {
 	var g core.Genesis
-	g.Config = cfg.createChainConfig()
+	g.Config = cfg.createChainConfig(val)
 
 	// Block attributes.
 	g.Difficulty = cfg.genesisDifficulty()
 	if cfg.clique {
 		g.ExtraData = cliqueInit(cliqueSignerKey)
 	} else {
-		g.ExtraData = []byte("hivechain")
+		vals := make([]common.Address, 1)
+		vals[0] = val
+		header := g.ToBlock().Header()
+		qbftengine.ApplyHeaderQBFTExtra(
+			header,
+			func(qbftExtra *types.QBFTExtra) error {
+				qbftExtra.Validators = vals
+				return nil
+			})
+		g.ExtraData = header.Extra
 	}
 	g.GasLimit = params.GenesisGasLimit * 8
 	zero := new(big.Int)
@@ -155,6 +222,7 @@ func (cfg *generatorConfig) createGenesis() *core.Genesis {
 	// Initialize allocation.
 	// Here we add balance to known accounts and initialize built-in contracts.
 	g.Alloc = make(core.GenesisAlloc)
+	g.Alloc[val] = core.GenesisAccount{Balance: initialBalance} // validator account must have initial balance
 	for _, acc := range knownAccounts {
 		g.Alloc[acc.addr] = core.GenesisAccount{Balance: initialBalance}
 	}

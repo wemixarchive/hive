@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/ethereum/go-ethereum/crypto"
 	"io"
 	"os"
 	"strings"
@@ -81,8 +82,12 @@ func generateCommand(args []string) {
 	if err != nil {
 		panic(err)
 	}
-	g := newGenerator(cfg)
-	if err := g.run(); err != nil {
+	pk, err := crypto.GenerateKey()
+	if err != nil {
+		panic(err)
+	}
+	g := newGenerator(cfg, crypto.PubkeyToAddress(pk.PublicKey))
+	if err := g.run(pk); err != nil {
 		fatal(err)
 	}
 }

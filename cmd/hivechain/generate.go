@@ -3,6 +3,9 @@ package main
 import (
 	"crypto/ecdsa"
 	"fmt"
+	"github.com/ethereum/go-ethereum/eth/ethconfig"
+	"github.com/ethereum/go-ethereum/ethclient/simulated"
+	"github.com/ethereum/go-ethereum/node"
 	"math"
 	"math/big"
 	"math/rand"
@@ -13,7 +16,6 @@ import (
 	"github.com/ethereum/go-ethereum/consensus"
 	"github.com/ethereum/go-ethereum/consensus/beacon"
 	"github.com/ethereum/go-ethereum/consensus/clique"
-	"github.com/ethereum/go-ethereum/consensus/ethash"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/state"
@@ -83,8 +85,8 @@ type genAccount struct {
 	key  *ecdsa.PrivateKey
 }
 
-func newGenerator(cfg generatorConfig) *generator {
-	genesis := cfg.createGenesis()
+func newGenerator(cfg generatorConfig, val common.Address) *generator {
+	genesis := cfg.createGenesis(val)
 	return &generator{
 		cfg:      cfg,
 		genesis:  genesis,
@@ -109,9 +111,9 @@ func (cfg *generatorConfig) createBlockModifiers() (list []*modifierInstance) {
 }
 
 // run produces a chain and writes it.
-func (g *generator) run() error {
+func (g *generator) run(pk *ecdsa.PrivateKey) error {
 	db := rawdb.NewMemoryDatabase()
-	engine := g.createConsensusEngine(db)
+	engine := g.createConsensusEngine(db, pk)
 
 	// Init genesis block.
 	trieconfig := *triedb.HashDefaults
@@ -132,7 +134,7 @@ func (g *generator) run() error {
 	return g.write()
 }
 
-func (g *generator) createConsensusEngine(db ethdb.Database) consensus.Engine {
+func (g *generator) createConsensusEngine(db ethdb.Database, pk *ecdsa.PrivateKey) consensus.Engine {
 	var inner consensus.Engine
 	if g.genesis.Config.Clique != nil {
 		cliqueEngine := clique.New(g.genesis.Config.Clique, db)
@@ -141,10 +143,21 @@ func (g *generator) createConsensusEngine(db ethdb.Database) consensus.Engine {
 			return sig, err
 		})
 		inner = instaSeal{cliqueEngine}
-	} else {
-		inner = ethash.NewFaker()
+		return beacon.New(inner)
 	}
-	return beacon.New(inner)
+	/*
+		opts, err := bind.NewKeyedTransactorWithChainID(pk, params.AllEthashProtocolChanges.ChainID)
+		if err != nil {
+			return nil
+		}
+		g.genesis.Alloc = types.GenesisAlloc{
+			opts.From: {Balance: new(big.Int).Sub(new(big.Int).Lsh(common.Big1, 128), common.Big1)},
+		}*/
+	backend := simulated.NewWbftBackend(types.GenesisAlloc{}, func(nodeConf *node.Config, ethConf *ethconfig.Config) {
+		ethConf.Genesis = g.genesis
+		nodeConf.P2P.PrivateKey = pk
+	})
+	return backend.Engine()
 }
 
 func (g *generator) importChain(engine consensus.Engine, chain []*types.Block) (*core.BlockChain, error) {
