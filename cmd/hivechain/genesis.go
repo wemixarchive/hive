@@ -92,7 +92,6 @@ func (cfg *generatorConfig) createChainConfig(val common.Address) *params.ChainC
 	chaincfg.PangyoBlock = new(big.Int)
 	chaincfg.ApplepieBlock = new(big.Int)
 	chaincfg.BriocheBlock = new(big.Int)
-	chaincfg.MontBlancBlock = new(big.Int)
 	chaincfg.Brioche = &params.BriocheConfig{
 		BlockReward:       big.NewInt(1e18),
 		FirstHalvingBlock: big.NewInt(50),
@@ -102,7 +101,6 @@ func (cfg *generatorConfig) createChainConfig(val common.Address) *params.ChainC
 		HalvingRate:       50,
 	}
 
-	ebps := uint64(6)
 	br, _ := new(big.Int).SetString("1000000000000000000", 10)
 	bm := "validator"
 	vsm := "blockheader"
@@ -113,7 +111,6 @@ func (cfg *generatorConfig) createChainConfig(val common.Address) *params.ChainC
 	chaincfg.QBFT = &params.QBFTConfig{
 		EpochLength:              10,
 		BlockPeriodSeconds:       3,
-		EmptyBlockPeriodSeconds:  &ebps,
 		RequestTimeoutSeconds:    1000,
 		ProposerPolicy:           0,
 		BlockReward:              (*math.HexOrDecimal256)(br),
