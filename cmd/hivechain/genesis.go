@@ -92,7 +92,6 @@ func (cfg *generatorConfig) createChainConfig(val common.Address) *params.ChainC
 	chaincfg.PangyoBlock = new(big.Int)
 	chaincfg.ApplepieBlock = new(big.Int)
 	chaincfg.BriocheBlock = new(big.Int)
-	chaincfg.MontBlancBlock = new(big.Int)
 	chaincfg.Brioche = &params.BriocheConfig{
 		BlockReward:       big.NewInt(1e18),
 		FirstHalvingBlock: big.NewInt(50),
