@@ -5,5 +5,7 @@ workspace
 /hive
 
 # build output for rust simulators files
+cmd/hivechain/hivechain
+hivechain
 simulators/**/Cargo.lock
 simulators/**/target
