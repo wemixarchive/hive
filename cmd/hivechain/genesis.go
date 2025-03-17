@@ -3,11 +3,12 @@ package main
 import (
 	"crypto/ecdsa"
 	"fmt"
+	"math/big"
+	"strings"
+
 	"github.com/ethereum/go-ethereum/common/math"
 	qbftengine "github.com/ethereum/go-ethereum/consensus/qbft/engine"
 	"github.com/ethereum/go-ethereum/core/types"
-	"math/big"
-	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core"
@@ -102,9 +103,6 @@ func (cfg *generatorConfig) createChainConfig(val common.Address) *params.ChainC
 	}
 
 	br, _ := new(big.Int).SetString("1000000000000000000", 10)
-	bm := "validator"
-	vsm := "blockheader"
-	mb := common.HexToAddress("0x0000000000000000000000000000000000000000")
 	vals := make([]common.Address, 1)
 	vals[0] = val
 	mrts := uint64(4)
@@ -114,9 +112,6 @@ func (cfg *generatorConfig) createChainConfig(val common.Address) *params.ChainC
 		RequestTimeoutSeconds:    1000,
 		ProposerPolicy:           0,
 		BlockReward:              (*math.HexOrDecimal256)(br),
-		BeneficiaryMode:          &bm,
-		MiningBeneficiary:        &mb,
-		ValidatorSelectionMode:   &vsm,
 		Validators:               vals,
 		MaxRequestTimeoutSeconds: &mrts,
 	}
@@ -205,7 +200,12 @@ func (cfg *generatorConfig) createGenesis(val common.Address) *core.Genesis {
 		qbftengine.ApplyHeaderQBFTExtra(
 			header,
 			func(qbftExtra *types.QBFTExtra) error {
-				qbftExtra.Validators = vals
+				qbftExtra.EpochInfo = &types.EpochInfo{
+					Stakers: []*types.Staker{
+						{Addr: val, Diligence: types.DefaultDiligence},
+					},
+					Validators: []uint32{0},
+				}
 				return nil
 			})
 		g.ExtraData = header.Extra
