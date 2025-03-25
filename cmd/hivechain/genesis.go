@@ -6,9 +6,11 @@ import (
 	"math/big"
 	"strings"
 
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/common/math"
 	qbftengine "github.com/ethereum/go-ethereum/consensus/qbft/engine"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto/bls"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core"
@@ -59,7 +61,7 @@ var (
 )
 
 // createChainConfig creates a chain configuration.
-func (cfg *generatorConfig) createChainConfig(val common.Address) *params.ChainConfig {
+func (cfg *generatorConfig) createChainConfig(val common.Address, blsPublicKey []byte) *params.ChainConfig {
 	chaincfg := new(params.ChainConfig)
 
 	chainid, _ := new(big.Int).SetString("3503995874084926", 10)
@@ -104,7 +106,9 @@ func (cfg *generatorConfig) createChainConfig(val common.Address) *params.ChainC
 
 	br, _ := new(big.Int).SetString("1000000000000000000", 10)
 	vals := make([]common.Address, 1)
+	blsPubKeys := make([]string, 1)
 	vals[0] = val
+	blsPubKeys[0] = hexutil.Encode(blsPublicKey)
 	mrts := uint64(4)
 	chaincfg.QBFT = &params.QBFTConfig{
 		EpochLength:              10,
@@ -113,6 +117,7 @@ func (cfg *generatorConfig) createChainConfig(val common.Address) *params.ChainC
 		ProposerPolicy:           0,
 		BlockReward:              (*math.HexOrDecimal256)(br),
 		Validators:               vals,
+		BLSPublicKeys:            blsPubKeys,
 		MaxRequestTimeoutSeconds: &mrts,
 	}
 
@@ -185,17 +190,19 @@ func (cfg *generatorConfig) genesisDifficulty() *big.Int {
 }
 
 // createGenesis creates the genesis block and config.
-func (cfg *generatorConfig) createGenesis(val common.Address) *core.Genesis {
+func (cfg *generatorConfig) createGenesis(valKey *ecdsa.PrivateKey) *core.Genesis {
 	var g core.Genesis
-	g.Config = cfg.createChainConfig(val)
+	val := crypto.PubkeyToAddress(valKey.PublicKey)
+	blsKey, _ := bls.DeriveFromECDSA(valKey)
+	blsPubKey := blsKey.PublicKey().Marshal()
+
+	g.Config = cfg.createChainConfig(val, blsPubKey)
 
 	// Block attributes.
 	g.Difficulty = cfg.genesisDifficulty()
 	if cfg.clique {
 		g.ExtraData = cliqueInit(cliqueSignerKey)
 	} else {
-		vals := make([]common.Address, 1)
-		vals[0] = val
 		header := g.ToBlock().Header()
 		qbftengine.ApplyHeaderQBFTExtra(
 			header,
@@ -204,7 +211,8 @@ func (cfg *generatorConfig) createGenesis(val common.Address) *core.Genesis {
 					Stakers: []*types.Staker{
 						{Addr: val, Diligence: types.DefaultDiligence},
 					},
-					Validators: []uint32{0},
+					Validators:    []uint32{0},
+					BLSPublicKeys: [][]byte{blsPubKey},
 				}
 				return nil
 			})
