@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/ethereum/go-ethereum/crypto"
 	"path/filepath"
 	"testing"
+
+	"github.com/ethereum/go-ethereum/crypto"
 )
 
 func TestGenerate(t *testing.T) {
@@ -24,7 +25,7 @@ func TestGenerate(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	g := newGenerator(cfg, crypto.PubkeyToAddress(pk.PublicKey))
+	g := newGenerator(cfg, pk)
 	if err := g.run(pk); err != nil {
 		t.Fatal(err)
 	}

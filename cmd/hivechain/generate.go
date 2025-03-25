@@ -3,13 +3,14 @@ package main
 import (
 	"crypto/ecdsa"
 	"fmt"
-	"github.com/ethereum/go-ethereum/eth/ethconfig"
-	"github.com/ethereum/go-ethereum/ethclient/simulated"
-	"github.com/ethereum/go-ethereum/node"
 	"math"
 	"math/big"
 	"math/rand"
 	"strings"
+
+	"github.com/ethereum/go-ethereum/eth/ethconfig"
+	"github.com/ethereum/go-ethereum/ethclient/simulated"
+	"github.com/ethereum/go-ethereum/node"
 
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/common"
@@ -85,8 +86,8 @@ type genAccount struct {
 	key  *ecdsa.PrivateKey
 }
 
-func newGenerator(cfg generatorConfig, val common.Address) *generator {
-	genesis := cfg.createGenesis(val)
+func newGenerator(cfg generatorConfig, valKey *ecdsa.PrivateKey) *generator {
+	genesis := cfg.createGenesis(valKey)
 	return &generator{
 		cfg:      cfg,
 		genesis:  genesis,
