@@ -7,9 +7,6 @@ import (
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/common/math"
-	qbftengine "github.com/ethereum/go-ethereum/consensus/qbft/engine"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto/bls"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -104,22 +101,14 @@ func (cfg *generatorConfig) createChainConfig(val common.Address, blsPublicKey [
 		HalvingRate:       50,
 	}
 
-	br, _ := new(big.Int).SetString("1000000000000000000", 10)
 	vals := make([]common.Address, 1)
 	blsPubKeys := make([]string, 1)
 	vals[0] = val
 	blsPubKeys[0] = hexutil.Encode(blsPublicKey)
-	mrts := uint64(4)
-	chaincfg.QBFT = &params.QBFTConfig{
-		EpochLength:              10,
-		BlockPeriodSeconds:       3,
-		RequestTimeoutSeconds:    1000,
-		ProposerPolicy:           0,
-		BlockReward:              (*math.HexOrDecimal256)(br),
-		Validators:               vals,
-		BLSPublicKeys:            blsPubKeys,
-		MaxRequestTimeoutSeconds: &mrts,
-	}
+	chaincfg.MontBlancBlock = new(big.Int)
+	chaincfg.MontBlanc = params.DefaultMontBlancConfig
+	chaincfg.MontBlanc.Init.Validators = vals
+	chaincfg.MontBlanc.Init.BLSPublicKeys = blsPubKeys
 
 	/*
 		// Apply forks.
@@ -202,21 +191,6 @@ func (cfg *generatorConfig) createGenesis(valKey *ecdsa.PrivateKey) *core.Genesi
 	g.Difficulty = cfg.genesisDifficulty()
 	if cfg.clique {
 		g.ExtraData = cliqueInit(cliqueSignerKey)
-	} else {
-		header := g.ToBlock().Header()
-		qbftengine.ApplyHeaderQBFTExtra(
-			header,
-			func(qbftExtra *types.QBFTExtra) error {
-				qbftExtra.EpochInfo = &types.EpochInfo{
-					Stakers: []*types.Staker{
-						{Addr: val, Diligence: types.DefaultDiligence},
-					},
-					Validators:    []uint32{0},
-					BLSPublicKeys: [][]byte{blsPubKey},
-				}
-				return nil
-			})
-		g.ExtraData = header.Extra
 	}
 	g.GasLimit = params.GenesisGasLimit * 8
 	zero := new(big.Int)

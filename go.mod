@@ -121,4 +121,4 @@ require (
 
 replace github.com/ethereum/hive/hiveproxy => ./hiveproxy
 
-replace github.com/ethereum/go-ethereum => github.com/wemixarchive/go-wemix-qbft v0.0.0-20250325085429-e8a8743f078d
+replace github.com/ethereum/go-ethereum => github.com/wemixarchive/go-wemix-qbft v0.0.0-20250613060431-343199b8b534
