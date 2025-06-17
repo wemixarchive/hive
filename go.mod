@@ -2,8 +2,6 @@ module github.com/ethereum/hive
 
 go 1.21
 
-toolchain go1.22.1
-
 require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/ethereum/go-ethereum v1.13.14
@@ -121,4 +119,4 @@ require (
 
 replace github.com/ethereum/hive/hiveproxy => ./hiveproxy
 
-replace github.com/ethereum/go-ethereum => github.com/wemixarchive/go-wemix-qbft v0.0.0-20250613060431-343199b8b534
+replace github.com/ethereum/go-ethereum => github.com/wemixarchive/go-wemix-qbft v0.0.0-20250617010600-801f97e6e7ad
