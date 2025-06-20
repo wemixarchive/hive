@@ -105,10 +105,10 @@ func (cfg *generatorConfig) createChainConfig(val common.Address, blsPublicKey [
 	blsPubKeys := make([]string, 1)
 	vals[0] = val
 	blsPubKeys[0] = hexutil.Encode(blsPublicKey)
-	chaincfg.MontBlancBlock = new(big.Int)
-	chaincfg.MontBlanc = params.DefaultMontBlancConfig
-	chaincfg.MontBlanc.Init.Validators = vals
-	chaincfg.MontBlanc.Init.BLSPublicKeys = blsPubKeys
+	chaincfg.CroissantBlock = new(big.Int)
+	chaincfg.Croissant = params.DefaultCroissantConfig
+	chaincfg.Croissant.Init.Validators = vals
+	chaincfg.Croissant.Init.BLSPublicKeys = blsPubKeys
 
 	/*
 		// Apply forks.
