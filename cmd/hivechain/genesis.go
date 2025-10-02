@@ -89,26 +89,22 @@ func (cfg *generatorConfig) createChainConfig(val common.Address, blsPublicKey [
 	chaincfg.LondonBlock = new(big.Int)
 	chaincfg.ArrowGlacierBlock = new(big.Int)
 	chaincfg.GrayGlacierBlock = new(big.Int)
-	chaincfg.PangyoBlock = new(big.Int)
 	chaincfg.ApplepieBlock = new(big.Int)
-	chaincfg.BriocheBlock = new(big.Int)
-	chaincfg.Brioche = &params.BriocheConfig{
-		BlockReward:       big.NewInt(1e18),
-		FirstHalvingBlock: big.NewInt(50),
-		HalvingPeriod:     big.NewInt(50),
-		FinishRewardBlock: big.NewInt(450),
-		HalvingTimes:      8,
-		HalvingRate:       50,
-	}
 
 	vals := make([]common.Address, 1)
 	blsPubKeys := make([]string, 1)
 	vals[0] = val
 	blsPubKeys[0] = hexutil.Encode(blsPublicKey)
-	chaincfg.CroissantBlock = new(big.Int)
-	chaincfg.Croissant = params.DefaultCroissantConfig
-	chaincfg.Croissant.Init.Validators = vals
-	chaincfg.Croissant.Init.BLSPublicKeys = blsPubKeys
+	chaincfg.Anzeon = params.DefaultAnzeonConfig
+	chaincfg.Anzeon.Init.Validators = vals
+	chaincfg.Anzeon.Init.BLSPublicKeys = blsPubKeys
+	chaincfg.Anzeon.SystemContracts.GovValidator.Params = map[string]string{
+		"members":       val.String(),
+		"quorum":        "1",
+		"memberVersion": "1",
+		"validators":    val.String(),
+		"blsPublicKeys": blsPubKeys[0],
+	}
 
 	/*
 		// Apply forks.
