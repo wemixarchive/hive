@@ -154,7 +154,7 @@ func (g *generator) createConsensusEngine(db ethdb.Database, pk *ecdsa.PrivateKe
 		g.genesis.Alloc = types.GenesisAlloc{
 			opts.From: {Balance: new(big.Int).Sub(new(big.Int).Lsh(common.Big1, 128), common.Big1)},
 		}*/
-	backend := simulated.NewWbftBackend(types.GenesisAlloc{}, func(nodeConf *node.Config, ethConf *ethconfig.Config) {
+	backend := simulated.NewWBFTBackend(types.GenesisAlloc{}, func(nodeConf *node.Config, ethConf *ethconfig.Config) {
 		ethConf.Genesis = g.genesis
 		nodeConf.P2P.PrivateKey = pk
 	})
