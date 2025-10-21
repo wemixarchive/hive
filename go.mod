@@ -119,4 +119,4 @@ require (
 
 replace github.com/ethereum/hive/hiveproxy => ./hiveproxy
 
-replace github.com/ethereum/go-ethereum => github.com/wemixarchive/go-wemix-wbft v0.0.0-20250620015305-e0a9498b672c
+replace github.com/ethereum/go-ethereum => github.com/wemixarchive/stable-one v0.0.0-20251017071151-9e4a81fe5b66
