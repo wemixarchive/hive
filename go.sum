@@ -409,8 +409,8 @@ github.com/valyala/fasthttp v1.6.0/go.mod h1:FstJa9V+Pj9vQ7OJie2qMHdwemEDaDiSdBn
 github.com/valyala/fasttemplate v1.0.1/go.mod h1:UQGH1tvbgY+Nz5t2n7tXsz52dQxojPUpymEIMZ47gx8=
 github.com/valyala/fasttemplate v1.2.1/go.mod h1:KHLXt3tVN2HBp8eijSv/kGJopbvo7S+qRAEEKiv+SiQ=
 github.com/valyala/tcplisten v0.0.0-20161114210144-ceec8f93295a/go.mod h1:v3UYOV9WzVtRmSR+PDvWpU/qWl4Wa5LApYYX4ZtKbio=
-github.com/wemixarchive/stable-one v0.0.0-20251017071151-9e4a81fe5b66 h1:ujhUYX9k+7nS6M9Ut4yMqxaM8jVzLx4L+KFvWVJY27E=
-github.com/wemixarchive/stable-one v0.0.0-20251017071151-9e4a81fe5b66/go.mod h1:XbvnRzzZCoTi8IEq3aFJnEC1J+e3UVD4riNkLecnGQ0=
+github.com/wemixarchive/go-stablenet v0.0.0-20251030065412-83bd8292c922 h1:b1XZVZHu6NTz1jUhqsjFDE6aTr5pwcJI0TFxGZBRobg=
+github.com/wemixarchive/go-stablenet v0.0.0-20251030065412-83bd8292c922/go.mod h1:kXy/jkmdMZnAbLWtHpIYHpKrugdhwV0ZPi5GKo1I8D0=
 github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f/go.mod h1:N2zxlSyiKSe5eX1tZViRH5QA0qijqEDrYZiPEAiq3wU=
 github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415/go.mod h1:GwrjFmJcFw6At/Gs6z4yjiIwzuJ1/+UwLxMQDVQXShQ=
 github.com/xeipuuv/gojsonschema v1.2.0/go.mod h1:anYRn/JVcOK2ZgGU+IjEV4nwlhoK5sQluxsYJ78Id3Y=

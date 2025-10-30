@@ -105,6 +105,33 @@ func (cfg *generatorConfig) createChainConfig(val common.Address, blsPublicKey [
 		"validators":    val.String(),
 		"blsPublicKeys": blsPubKeys[0],
 	}
+	chaincfg.Anzeon.SystemContracts.NativeCoinAdapter.Params = map[string]string{
+		"masterMinter":  "0x0000000000000000000000000000000000001002",
+		"minters":       "0x0000000000000000000000000000000000001003",
+		"minterAllowed": "10000000000000000000000000000", // 1e28, 10_000_000_000 KRC1
+		"name":          "KRC1",
+		"symbol":        "KRC1",
+		"decimals":      "18",
+		"currency":      "KRW",
+	}
+
+	chaincfg.Anzeon.SystemContracts.GovMasterMinter.Params = map[string]string{
+		"quorum":             "1",
+		"expiry":             "604800", // 7 days
+		"members":            "0xaa5faa65e9cc0f74a85b6fdfb5f6991f5c094697",
+		"memberVersion":      "1",
+		"fiatToken":          "0x0000000000000000000000000000000000001000",
+		"maxMinterAllowance": "10000000000000000000000000000", // 1e28, 10_000_000_000 KRC1
+	}
+
+	chaincfg.Anzeon.SystemContracts.GovMinter.Params = map[string]string{
+		"quorum":        "1",
+		"expiry":        "604800", // 7 days
+		"members":       "0xaa5faa65e9cc0f74a85b6fdfb5f6991f5c094697",
+		"memberVersion": "1",
+		"fiatToken":     "0x0000000000000000000000000000000000001000",
+		"beneficiaries": "0xaa5faa65e9cc0f74a85b6fdfb5f6991f5c094697", // minted token received address by each member
+	}
 
 	/*
 		// Apply forks.
