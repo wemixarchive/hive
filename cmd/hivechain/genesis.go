@@ -101,9 +101,11 @@ func (cfg *generatorConfig) createChainConfig(val common.Address, blsPublicKey [
 	chaincfg.Anzeon.SystemContracts.GovValidator.Params = map[string]string{
 		"members":       val.String(),
 		"quorum":        "1",
+		"expiry":        "604800", // 7 days
 		"memberVersion": "1",
 		"validators":    val.String(),
 		"blsPublicKeys": blsPubKeys[0],
+		"maxProposals":  "3",
 	}
 	chaincfg.Anzeon.SystemContracts.NativeCoinAdapter.Params = map[string]string{
 		"masterMinter":  "0x0000000000000000000000000000000000001002",
@@ -121,7 +123,9 @@ func (cfg *generatorConfig) createChainConfig(val common.Address, blsPublicKey [
 		"members":            "0xaa5faa65e9cc0f74a85b6fdfb5f6991f5c094697",
 		"memberVersion":      "1",
 		"fiatToken":          "0x0000000000000000000000000000000000001000",
+		"minters":            "0x0000000000000000000000000000000000001003",
 		"maxMinterAllowance": "10000000000000000000000000000", // 1e28, 10_000_000_000 KRC1
+		"maxProposals":       "3",
 	}
 
 	chaincfg.Anzeon.SystemContracts.GovMinter.Params = map[string]string{
@@ -130,6 +134,7 @@ func (cfg *generatorConfig) createChainConfig(val common.Address, blsPublicKey [
 		"members":       "0xaa5faa65e9cc0f74a85b6fdfb5f6991f5c094697",
 		"memberVersion": "1",
 		"fiatToken":     "0x0000000000000000000000000000000000001000",
+		"maxProposals":  "3",
 	}
 
 	/*
