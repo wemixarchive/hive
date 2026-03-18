@@ -110,9 +110,9 @@ func (cfg *generatorConfig) createChainConfig(val common.Address, blsPublicKey [
 	chaincfg.Anzeon.SystemContracts.NativeCoinAdapter.Params = map[string]string{
 		"masterMinter":  "0x0000000000000000000000000000000000001002",
 		"minters":       "0x0000000000000000000000000000000000001003",
-		"minterAllowed": "10000000000000000000000000000", // 1e28, 10_000_000_000 KRC1
-		"name":          "KRC1",
-		"symbol":        "KRC1",
+		"minterAllowed": "10000000000000000000000000000", // 1e28, 10_000_000_000 WKRC
+		"name":          "WKRC",
+		"symbol":        "WKRC",
 		"decimals":      "18",
 		"currency":      "KRW",
 	}
@@ -124,7 +124,7 @@ func (cfg *generatorConfig) createChainConfig(val common.Address, blsPublicKey [
 		"memberVersion":      "1",
 		"fiatToken":          "0x0000000000000000000000000000000000001000",
 		"minters":            "0x0000000000000000000000000000000000001003",
-		"maxMinterAllowance": "10000000000000000000000000000", // 1e28, 10_000_000_000 KRC1
+		"maxMinterAllowance": "10000000000000000000000000000", // 1e28, 10_000_000_000 WKRC
 		"maxProposals":       "3",
 	}
 
