@@ -137,6 +137,14 @@ func (cfg *generatorConfig) createChainConfig(val common.Address, blsPublicKey [
 		"maxProposals":  "3",
 	}
 
+	chaincfg.Anzeon.SystemContracts.GovCouncil.Params = map[string]string{
+		"quorum":        "1",
+		"expiry":        "604800", // 7 days
+		"members":       val.String(),
+		"memberVersion": "1",
+		"maxProposals":  "3",
+	}
+
 	/*
 		// Apply forks.
 		forks := cfg.forkBlocks()
